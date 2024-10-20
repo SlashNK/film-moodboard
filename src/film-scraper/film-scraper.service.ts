@@ -21,8 +21,8 @@ export class FilmScraperService implements IScraper {
     return this.adapter.searchFilm(input);
   }
 
-  similarFilms(film: IFilm): Promise<IFilm[]> {
-    return this.adapter.similarFilms(film);
+  similarFilms(filmUrl: IFilm['url']): Promise<IFilm[]> {
+    return this.adapter.similarFilms(filmUrl);
   }
 
   filmsByDirector(director: string): Promise<IFilm[]> {

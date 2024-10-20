@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const FilmSchema = z.object({
-  title: z.string().describe("film title"),
+  title: z.string().nullable().default(null).describe("film title"),
   url: z.string().url().describe("film url"),
   year: z.string().nullable().default(null).describe("test"),
   directors: z.array(z.string()).default([]).describe("list of film directors"),
