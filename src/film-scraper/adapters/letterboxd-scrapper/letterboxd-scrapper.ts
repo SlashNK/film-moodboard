@@ -130,7 +130,7 @@ export class LetterboxdScrapper implements IScraper {
         }
         similarFilms.push({
           title: filmName || null,
-          url: this.getAbsoluteUrl([filmRelPath]),
+          url: this.getAbsoluteUrl(["film", filmRelPath]),
           year: releaseYear || null,
           directors: [],
           description: null,

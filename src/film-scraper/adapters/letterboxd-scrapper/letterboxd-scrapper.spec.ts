@@ -28,7 +28,7 @@ describe("LetterboxdScrapper", () => {
         if (!validationResult.success) {
           console.error(`Invalid film data: ${validationResult.error}`);
         } else {
-          console.log(`Parsed film: ${JSON.stringify(validationResult.data)}`);
+          // console.log(`Parsed film: ${JSON.stringify(validationResult.data)}`);
         }
       });
     }, 100000);
@@ -45,9 +45,9 @@ describe("LetterboxdScrapper", () => {
         if (!validationResult.success) {
           console.error(`Invalid similar film data: ${validationResult.error}`);
         } else {
-          console.log(
-            `Parsed similar film: ${JSON.stringify(validationResult.data)}`
-          );
+          // console.log(
+          //   `Parsed similar film: ${JSON.stringify(validationResult.data)}`
+          // );
         }
       });
     }, 100000);
@@ -63,9 +63,9 @@ describe("LetterboxdScrapper", () => {
         if (!validationResult.success) {
           console.error(`Invalid similar film data: ${validationResult.error}`);
         } else {
-          console.log(
-            `Parsed similar film: ${JSON.stringify(validationResult.data)}`
-          );
+          // console.log(
+          //   `Parsed similar film: ${JSON.stringify(validationResult.data)}`
+          // );
         }
       });
     }, 100000);
@@ -79,7 +79,7 @@ describe("LetterboxdScrapper", () => {
       if (!validationResult.success) {
         console.error(`Invalid film data: ${validationResult.error}`);
       } else {
-        console.log(`Parsed film: ${JSON.stringify(validationResult.data)}`);
+        // console.log(`Parsed film: ${JSON.stringify(validationResult.data)}`);
       }
       expect(film.title).toBeDefined();
       expect(film.url).toBe(filmUrl);
