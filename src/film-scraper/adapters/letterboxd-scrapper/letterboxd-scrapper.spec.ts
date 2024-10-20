@@ -1,3 +1,4 @@
+import { toKebabCase } from "src/film-scraper/shared/utils";
 import { LetterboxdScrapper } from "./letterboxd-scrapper";
 import { FilmSchema } from "src/shared/zod-schemas/FilmSchema";
 
@@ -39,6 +40,24 @@ describe("LetterboxdScrapper", () => {
       const similarFilms = await scraper.similarFilms(filmUrl);
       expect(similarFilms).toBeInstanceOf(Array);
       similarFilms.forEach((film) => {
+        const validationResult = FilmSchema.safeParse(film);
+        expect(validationResult.success).toBe(true);
+        if (!validationResult.success) {
+          console.error(`Invalid similar film data: ${validationResult.error}`);
+        } else {
+          console.log(
+            `Parsed similar film: ${JSON.stringify(validationResult.data)}`
+          );
+        }
+      });
+    }, 100000);
+  });
+  describe.only("filmsByDirector()", () => {
+    it("should return a list of films by director", async () => {
+      const director = "Alex Garland";
+      const directorFilms = await scraper.filmsByDirector(director);
+      expect(directorFilms).toBeInstanceOf(Array);
+      directorFilms.forEach((film) => {
         const validationResult = FilmSchema.safeParse(film);
         expect(validationResult.success).toBe(true);
         if (!validationResult.success) {

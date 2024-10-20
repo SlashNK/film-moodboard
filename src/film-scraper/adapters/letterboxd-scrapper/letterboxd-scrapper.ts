@@ -1,11 +1,13 @@
 import { Browser, chromium, Page } from "playwright";
 import { IScraper } from "src/film-scraper/shared/interfaces/IFIlmScraper";
+import { toKebabCase } from "src/film-scraper/shared/utils";
 import { FilmSchema, IFilm } from "src/shared/zod-schemas/FilmSchema";
 
 export class LetterboxdScrapper implements IScraper {
   LETTERBOXD_URL_PREFIX = "https://letterboxd.com";
   SEARCH_FILM_URL_ROUTE = "search/films";
   SIMILAR_FILM_URL_ROUTE = "similar";
+  DIRECTOR_URL_ROUTE = "director";
   constructor() {}
   _browser: Browser | null = null;
   _page: Page | null = null;
@@ -16,18 +18,21 @@ export class LetterboxdScrapper implements IScraper {
     }
     return this._browser;
   }
+
   async getPage(): Promise<Page> {
     if (this._page == null) {
       this._page = await (await this.getBrowser()).newPage();
     }
     return this._page;
   }
+
   async closePage() {
     if (this._page != null) {
       await this._page.close();
     }
     this._page = null;
   }
+
   async closeBrowser() {
     await this.closePage();
     if (this._browser != null) {
@@ -35,15 +40,17 @@ export class LetterboxdScrapper implements IScraper {
     }
     this._browser = null;
   }
+
   joinUrlPath(path: string[]): string {
     const cleanedRelPath = path.map((elm) => elm.replace(/^\/+|\/+$/g, ""));
     return cleanedRelPath.join("/");
   }
+
   getAbsoluteUrl(relPath: string[]): string {
-    const cleanedRelPath = relPath.map((elm) => elm.replace(/^\/+|\/+$/g, ""));
-    const absolutePath = [this.LETTERBOXD_URL_PREFIX, ...cleanedRelPath].join(
-      "/"
-    );
+    const absolutePath = [
+      this.LETTERBOXD_URL_PREFIX,
+      this.joinUrlPath(relPath),
+    ].join("/");
     return absolutePath;
   }
 
@@ -118,7 +125,7 @@ export class LetterboxdScrapper implements IScraper {
           "data-film-release-year"
         );
         if (!filmRelPath) {
-          console.error(`Invalid film URL: ${filmUrl}`);
+          console.error(`Invalid film URL: ${filmRelPath}`);
           continue;
         }
         similarFilms.push({
@@ -140,7 +147,39 @@ export class LetterboxdScrapper implements IScraper {
   }
 
   async filmsByDirector(director: string): Promise<IFilm[]> {
-    throw new Error("Method not implemented.");
+    const page = await this.getPage();
+    const filmsByDirector: IFilm[] = [];
+    const directorKebab = toKebabCase(director);
+    const url = this.getAbsoluteUrl([this.DIRECTOR_URL_ROUTE, directorKebab]);
+    try {
+      await page.goto(url);
+      const filmElements = await page.$$(".poster-container .poster");
+      for (const filmElement of filmElements) {
+        const filmName = await filmElement.getAttribute("data-film-name");
+        const filmRelPath = await filmElement.getAttribute("data-film-slug");
+        const releaseYear = await filmElement.getAttribute(
+          "data-film-release-year"
+        );
+        if (!filmRelPath) {
+          console.error(`Invalid film URL: ${filmRelPath}`);
+          continue;
+        }
+        filmsByDirector.push({
+          title: filmName || null,
+          url: this.getAbsoluteUrl([filmRelPath]),
+          year: releaseYear || null,
+          directors: [director],
+          description: null,
+          runtime: null,
+          genres: [],
+          countries: [],
+          languages: [],
+        });
+      }
+    } catch (error) {
+      console.error(`Error fetching similar films: ${error.message}`);
+    }
+    return filmsByDirector;
   }
 
   async filmsByGenre(genre: string): Promise<IFilm[]> {
