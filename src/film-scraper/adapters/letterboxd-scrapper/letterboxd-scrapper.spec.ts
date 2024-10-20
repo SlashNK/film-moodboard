@@ -18,7 +18,7 @@ describe("LetterboxdScrapper", () => {
     expect(scraper).toBeDefined();
   });
 
-  describe.skip("searchFilm()", () => {
+  describe("searchFilm()", () => {
     it("should return a list of films", async () => {
       const films = await scraper.searchFilm("jest");
       expect(films).toBeInstanceOf(Array);
@@ -70,7 +70,7 @@ describe("LetterboxdScrapper", () => {
       });
     }, 100000);
   });
-  describe.only("getFilmByUrl()", () => {
+  describe("getFilmByUrl()", () => {
     it("should return film details for a valid film URL", async () => {
       const filmUrl = "https://letterboxd.com/film/men/";
       const film = await scraper.getFilmByUrl(filmUrl);
