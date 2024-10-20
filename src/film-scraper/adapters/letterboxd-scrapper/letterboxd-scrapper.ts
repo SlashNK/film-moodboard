@@ -181,8 +181,63 @@ export class LetterboxdScrapper implements IScraper {
     }
     return filmsByDirector;
   }
+  async getFilmByUrl(filmUrl: IFilm["url"]): Promise<IFilm> {
+    const page = await this.getPage();
+    try {
+      await page.goto(filmUrl);
+      const title: string | null =
+        (await page.$eval("h1.headline-1.filmtitle .name", (el) =>
+          el.textContent?.trim()
+        )) || null;
 
-  async filmsByGenre(genre: string): Promise<IFilm[]> {
-    throw new Error("Method not implemented.");
+      // Extract the year
+      const year = await page.$eval("div.releaseyear a", (el) =>
+        el.textContent?.trim()
+      );
+
+      // Extract the director
+      const director = await page.$eval(
+        "p.credits .directorlist a.contributor",
+        (el) => el.textContent?.trim()
+      );
+
+      // Extract the description
+      const description = await page.$eval(
+        "div.review.body-text.-prose.-hero.prettify .truncate p",
+        (el) => el.textContent?.trim()
+      );
+
+      // Extract the runtime (in minutes)
+      const runtimeText = await page.$eval("p.text-link.text-footer", (el) =>
+        el.textContent?.trim()
+      );
+      const runtimeMatch = runtimeText?.match(/(\d+)\s*mins/);
+      const runtime = runtimeMatch ? parseInt(runtimeMatch[1], 10) : null;
+      const film: IFilm = {
+        title: title,
+        url: filmUrl,
+        year: year || null,
+        directors: director ? [director] : [],
+        description: description || null,
+        runtime: runtime,
+        genres: [],
+        countries: [],
+        languages: [],
+      };
+      return film;
+    } catch (error) {
+      console.error(`Error fetching similar films: ${error.message}`);
+    }
+    return {
+      url: filmUrl,
+      countries: [],
+      directors: [],
+      description: null,
+      genres: [],
+      languages: [],
+      runtime: null,
+      title: null,
+      year: null,
+    };
   }
 }

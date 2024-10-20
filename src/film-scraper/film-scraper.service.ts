@@ -21,15 +21,14 @@ export class FilmScraperService implements IScraper {
     return this.adapter.searchFilm(input);
   }
 
-  similarFilms(filmUrl: IFilm['url']): Promise<IFilm[]> {
+  similarFilms(filmUrl: IFilm["url"]): Promise<IFilm[]> {
     return this.adapter.similarFilms(filmUrl);
   }
 
   filmsByDirector(director: string): Promise<IFilm[]> {
     return this.adapter.filmsByDirector(director);
   }
-
-  filmsByGenre(genre: string): Promise<IFilm[]> {
-    return this.adapter.filmsByGenre(genre);
+  getFilmByUrl(filmUrl: IFilm["url"]): Promise<IFilm> {
+    return this.adapter.getFilmByUrl(filmUrl);
   }
 }

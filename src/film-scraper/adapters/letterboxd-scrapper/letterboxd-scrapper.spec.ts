@@ -52,7 +52,7 @@ describe("LetterboxdScrapper", () => {
       });
     }, 100000);
   });
-  describe.only("filmsByDirector()", () => {
+  describe("filmsByDirector()", () => {
     it("should return a list of films by director", async () => {
       const director = "Alex Garland";
       const directorFilms = await scraper.filmsByDirector(director);
@@ -68,6 +68,23 @@ describe("LetterboxdScrapper", () => {
           );
         }
       });
+    }, 100000);
+  });
+  describe.only("getFilmByUrl()", () => {
+    it("should return film details for a valid film URL", async () => {
+      const filmUrl = "https://letterboxd.com/film/men/";
+      const film = await scraper.getFilmByUrl(filmUrl);
+      const validationResult = FilmSchema.safeParse(film);
+      expect(validationResult.success).toBe(true);
+      if (!validationResult.success) {
+        console.error(`Invalid film data: ${validationResult.error}`);
+      } else {
+        console.log(`Parsed film: ${JSON.stringify(validationResult.data)}`);
+      }
+      expect(film.title).toBeDefined();
+      expect(film.url).toBe(filmUrl);
+      expect(film.year).toMatch(/^\d{4}$/);
+      expect(film.directors.length).toBeGreaterThan(0);
     }, 100000);
   });
 });
